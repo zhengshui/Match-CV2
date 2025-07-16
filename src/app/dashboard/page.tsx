@@ -55,9 +55,9 @@ export default async function DashboardPage() {
               </div>
               <div className="bg-gray-50 px-5 py-3">
                 <div className="text-sm">
-                  <button className="font-medium text-indigo-600 hover:text-indigo-500">
+                  <Link href="/dashboard/resumes" className="font-medium text-indigo-600 hover:text-indigo-500">
                     Upload files
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
