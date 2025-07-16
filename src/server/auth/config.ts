@@ -1,5 +1,7 @@
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -22,6 +24,14 @@ declare module "next-auth" {
   // }
 }
 
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+// In-memory user store (replace with database later)
+const users = new Map<string, { id: string; email: string; password: string; name: string }>();
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -29,17 +39,43 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const result = loginSchema.safeParse(credentials);
+        if (!result.success) {
+          return null;
+        }
+
+        const { email, password } = result.data;
+        
+        // Check if user exists
+        const user = users.get(email);
+        if (!user) {
+          return null;
+        }
+
+        // Verify password
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
+      },
+    }),
   ],
+  pages: {
+    signIn: "/auth/signin",
+  },
   callbacks: {
     session: ({ session, token }) => ({
       ...session,
@@ -50,3 +86,18 @@ export const authConfig = {
     }),
   },
 } satisfies NextAuthConfig;
+
+// Helper function to register a new user
+export async function registerUser(email: string, password: string, name: string) {
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const id = crypto.randomUUID();
+  
+  users.set(email, {
+    id,
+    email,
+    password: hashedPassword,
+    name,
+  });
+  
+  return { id, email, name };
+}
