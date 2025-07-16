@@ -2,6 +2,7 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { db } from "~/lib/db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -29,9 +30,6 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
-// In-memory user store (replace with database later)
-const users = new Map<string, { id: string; email: string; password: string; name: string }>();
-
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -54,7 +52,10 @@ export const authConfig = {
         const { email, password } = result.data;
         
         // Check if user exists
-        const user = users.get(email);
+        const user = await db.user.findUnique({
+          where: { email },
+        });
+        
         if (!user) {
           return null;
         }
@@ -89,15 +90,24 @@ export const authConfig = {
 
 // Helper function to register a new user
 export async function registerUser(email: string, password: string, name: string) {
+  // Check if user already exists
+  const existingUser = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 12);
-  const id = crypto.randomUUID();
   
-  users.set(email, {
-    id,
-    email,
-    password: hashedPassword,
-    name,
+  const user = await db.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+    },
   });
   
-  return { id, email, name };
+  return { id: user.id, email: user.email, name: user.name };
 }

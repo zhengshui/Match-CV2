@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(RECRUITER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  jobs        Job[]
+  resumes     Resume[]
+  evaluations Evaluation[]
+
+  @@map("users")
+}
+
+model Job {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  requirements String
+  department  String?
+  location    String?
+  employmentType EmploymentType @default(FULL_TIME)
+  salaryRange String?
+  status      JobStatus @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  evaluations Evaluation[]
+  jobTags     JobTag[]
+
+  @@map("jobs")
+}
+
+model Resume {
+  id             String       @id @default(cuid())
+  candidateName  String
+  candidateEmail String
+  phone          String?
+  rawContent     String       // Original resume text
+  parsedData     String       // JSON string of parsed structured data
+  fileName       String?
+  fileType       String?
+  status         ResumeStatus @default(PENDING)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+
+  evaluations Evaluation[]
+  resumeTags  ResumeTag[]
+
+  @@map("resumes")
+}
+
+model Evaluation {
+  id               String           @id @default(cuid())
+  overallScore     Float
+  skillsScore      Float
+  experienceScore  Float
+  educationScore   Float
+  culturalFitScore Float?
+  explanation      String           // AI-generated explanation
+  recommendation   String?          // AI recommendation
+  status           EvaluationStatus @default(PENDING)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  // Relations
+  job      Job    @relation(fields: [jobId], references: [id])
+  jobId    String
+  resume   Resume @relation(fields: [resumeId], references: [id])
+  resumeId String
+  evaluatedBy User @relation(fields: [evaluatedById], references: [id])
+  evaluatedById String
+
+  @@unique([jobId, resumeId])
+  @@map("evaluations")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String?
+  category  TagCategory @default(SKILL)
+  createdAt DateTime @default(now())
+
+  // Relations
+  jobTags    JobTag[]
+  resumeTags ResumeTag[]
+
+  @@map("tags")
+}
+
+model JobTag {
+  id    String @id @default(cuid())
+  jobId String
+  tagId String
+
+  // Relations
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, tagId])
+  @@map("job_tags")
+}
+
+model ResumeTag {
+  id       String @id @default(cuid())
+  resumeId String
+  tagId    String
+
+  // Relations
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([resumeId, tagId])
+  @@map("resume_tags")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  RECRUITER
+  HR_MANAGER
+}
+
+enum JobStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+  DRAFT
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum ResumeStatus {
+  PENDING
+  PARSED
+  FAILED
+  ARCHIVED
+}
+
+enum EvaluationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVIEWED
+}
+
+enum TagCategory {
+  SKILL
+  EXPERIENCE
+  EDUCATION
+  CERTIFICATION
+  INDUSTRY
+  LOCATION
+  CUSTOM
+}
