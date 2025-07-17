@@ -33,7 +33,7 @@ export function JobForm({
   onSubmit,
   initialData,
   isLoading = false,
-  submitLabel = "Create Job"
+  submitLabel = "创建职位"
 }: JobFormProps) {
   const [formData, setFormData] = useState<JobFormData>({
     title: initialData?.title ?? "",
@@ -78,19 +78,19 @@ export function JobForm({
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = "Job title is required";
+      newErrors.title = "职位标题为必填项";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Job description is required";
+      newErrors.description = "职位描述为必填项";
     } else if (formData.description.length < 10) {
-      newErrors.description = "Job description must be at least 10 characters";
+      newErrors.description = "职位描述至少需要10个字符";
     }
 
     if (!formData.requirements.trim()) {
-      newErrors.requirements = "Job requirements are required";
+      newErrors.requirements = "职位要求为必填项";
     } else if (formData.requirements.length < 10) {
-      newErrors.requirements = "Job requirements must be at least 10 characters";
+      newErrors.requirements = "职位要求至少需要10个字符";
     }
 
     setErrors(newErrors);
@@ -127,40 +127,40 @@ export function JobForm({
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Job Title *</Label>
+              <Label htmlFor="title">职位标题 *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("title", e.target.value)}
-                placeholder="e.g., Senior Software Engineer"
+                placeholder="例如，高级软件工程师"
               />
               {errors.title && <p className="text-sm text-red-600">{errors.title}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
+              <Label htmlFor="department">部门</Label>
               <Input
                 id="department"
                 value={formData.department}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("department", e.target.value)}
-                placeholder="e.g., Engineering"
+                placeholder="例如，工程部"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">工作地点</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("location", e.target.value)}
-                placeholder="e.g., San Francisco, CA"
+                placeholder="例如，北京市"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="employmentType">Employment Type</Label>
+              <Label htmlFor="employmentType">工作类型</Label>
               <Select
                 value={formData.employmentType}
                 onValueChange={(value: string) => handleInputChange("employmentType", value)}
@@ -169,17 +169,17 @@ export function JobForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="FULL_TIME">Full Time</SelectItem>
-                  <SelectItem value="PART_TIME">Part Time</SelectItem>
-                  <SelectItem value="CONTRACT">Contract</SelectItem>
-                  <SelectItem value="INTERNSHIP">Internship</SelectItem>
-                  <SelectItem value="FREELANCE">Freelance</SelectItem>
+                  <SelectItem value="FULL_TIME">全职</SelectItem>
+                  <SelectItem value="PART_TIME">兼职</SelectItem>
+                  <SelectItem value="CONTRACT">合同工</SelectItem>
+                  <SelectItem value="INTERNSHIP">实习生</SelectItem>
+                  <SelectItem value="FREELANCE">自由职业</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">状态</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value: string) => handleInputChange("status", value)}
@@ -188,61 +188,61 @@ export function JobForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DRAFT">Draft</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="PAUSED">Paused</SelectItem>
-                  <SelectItem value="CLOSED">Closed</SelectItem>
+                  <SelectItem value="DRAFT">草稿</SelectItem>
+                  <SelectItem value="ACTIVE">活跃</SelectItem>
+                  <SelectItem value="PAUSED">暂停</SelectItem>
+                  <SelectItem value="CLOSED">已关闭</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="salaryRange">Salary Range</Label>
+            <Label htmlFor="salaryRange">薪资范围</Label>
             <Input
               id="salaryRange"
               value={formData.salaryRange}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("salaryRange", e.target.value)}
-              placeholder="e.g., $80,000 - $120,000"
+              placeholder="例如，80,000 - 120,000 元"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Job Description *</Label>
+            <Label htmlFor="description">职位描述 *</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange("description", e.target.value)}
-              placeholder="Describe the role, responsibilities, and what you're looking for..."
+              placeholder="描述该职位的角色、职责和你正在寻找的人才..."
               rows={4}
             />
             {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="requirements">Requirements *</Label>
+            <Label htmlFor="requirements">职位要求 *</Label>
             <Textarea
               id="requirements"
               value={formData.requirements}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange("requirements", e.target.value)}
-              placeholder="List the required skills, experience, and qualifications..."
+              placeholder="列出所需的技能、经验和资格..."
               rows={4}
             />
             {errors.requirements && <p className="text-sm text-red-600">{errors.requirements}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tags">Skills & Tags</Label>
+            <Label htmlFor="tags">技能和标签</Label>
             <div className="flex gap-2">
               <Input
                 id="tags"
                 value={newTag}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTag(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Add a skill or tag and press Enter"
+                placeholder="添加技能或标签并按回车键"
               />
               <Button type="button" onClick={handleAddTag} variant="outline">
-                Add
+                添加
               </Button>
             </div>
             {formData.tags.length > 0 && (
@@ -261,7 +261,7 @@ export function JobForm({
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Saving..." : submitLabel}
+            {isLoading ? "保存中..." : submitLabel}
           </Button>
         </form>
       </CardContent>

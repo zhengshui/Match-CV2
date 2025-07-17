@@ -46,16 +46,16 @@ const statusColors: Record<JobStatus, string> = {
 };
 
 const employmentTypeLabels: Record<EmploymentType, string> = {
-  FULL_TIME: "Full Time",
-  PART_TIME: "Part Time",
-  CONTRACT: "Contract",
-  INTERNSHIP: "Internship",
-  FREELANCE: "Freelance"
+  FULL_TIME: "全职",
+  PART_TIME: "兼职",
+  CONTRACT: "合同工",
+  INTERNSHIP: "实习生",
+  FREELANCE: "自由职业"
 };
 
 export function JobCard({ job, onEdit, onDelete, onView }: JobCardProps) {
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("zh-CN", {
       month: "short",
       day: "numeric",
       year: "numeric"
@@ -110,13 +110,13 @@ export function JobCard({ job, onEdit, onDelete, onView }: JobCardProps) {
                 {onView && (
                   <DropdownMenuItem onClick={() => onView(job.id)}>
                     <Eye className="h-4 w-4 mr-2" />
-                    View Details
+                    查看详情
                   </DropdownMenuItem>
                 )}
                 {onEdit && (
                   <DropdownMenuItem onClick={() => onEdit(job.id)}>
                     <Edit className="h-4 w-4 mr-2" />
-                    Edit Job
+                    编辑职位
                   </DropdownMenuItem>
                 )}
                 {onDelete && (
@@ -125,7 +125,7 @@ export function JobCard({ job, onEdit, onDelete, onView }: JobCardProps) {
                     className="text-red-600"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Job
+                    删除职位
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -155,7 +155,7 @@ export function JobCard({ job, onEdit, onDelete, onView }: JobCardProps) {
               ))}
               {job.tags.length > 3 && (
                 <Badge variant="outline" className="text-xs">
-                  +{job.tags.length - 3} more
+                  +{job.tags.length - 3} 更多
                 </Badge>
               )}
             </div>
@@ -165,11 +165,11 @@ export function JobCard({ job, onEdit, onDelete, onView }: JobCardProps) {
 
       <CardFooter className="pt-3 border-t">
         <div className="flex items-center justify-between w-full text-xs text-muted-foreground">
-          <span>Created {formatDate(job.createdAt)}</span>
+          <span>创建于 {formatDate(job.createdAt)}</span>
           {typeof job.evaluationCount === "number" && (
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              {job.evaluationCount} candidates
+              {job.evaluationCount} 个候选人
             </div>
           )}
         </div>

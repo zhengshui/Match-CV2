@@ -41,14 +41,14 @@ export default function ResumeUpload({ onUploadSuccess, onUploadError }: ResumeU
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      onUploadError?.("Invalid file type. Please upload PDF, Word document, or text file.");
+      onUploadError?.("无效的文件类型。请上传PDF、Word文档或文本文件。");
       return;
     }
 
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      onUploadError?.("File size too large. Please upload files smaller than 10MB.");
+      onUploadError?.("文件过大。请上传小于10MB的文件。");
       return;
     }
 
@@ -89,7 +89,7 @@ export default function ResumeUpload({ onUploadSuccess, onUploadError }: ResumeU
         onUploadError?.(data.error ?? "Upload failed");
       }
     } catch {
-      onUploadError?.("Upload failed. Please try again.");
+      onUploadError?.("上传失败。请重试。");
     } finally {
       setUploading(false);
     }
@@ -166,19 +166,19 @@ export default function ResumeUpload({ onUploadSuccess, onUploadError }: ResumeU
 
           <div>
             <h3 className="text-lg font-medium text-gray-900">
-              {uploading ? "Uploading..." : "Upload Resume"}
+              {uploading ? "上传中..." : "上传简历"}
             </h3>
             <p className="text-sm text-gray-500 mt-1">
               {dragActive
-                ? "Drop your resume here"
-                : "Drag and drop or click to select"}
+                ? "拖拽简历到此处"
+                : "拖拽文件或点击选择"}
             </p>
           </div>
 
           <div className="text-xs text-gray-400">
-            Supported formats: PDF, Word (.doc, .docx), Text (.txt)
+            支持格式：PDF、Word (.doc, .docx)、文本 (.txt)
             <br />
-            Maximum file size: 10MB
+            最大文件大小：10MB
           </div>
 
           {uploading && (

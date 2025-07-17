@@ -80,15 +80,15 @@ export function BatchEvaluationSummary({
 
   const getRecommendationBadge = (recommendation: string) => {
     if (recommendation.toLowerCase().includes("highly recommended")) {
-      return <Badge className="bg-green-100 text-green-800">Highly Recommended</Badge>;
+      return <Badge className="bg-green-100 text-green-800">强烈推荐</Badge>;
     }
     if (recommendation.toLowerCase().includes("recommended")) {
-      return <Badge className="bg-blue-100 text-blue-800">Recommended</Badge>;
+      return <Badge className="bg-blue-100 text-blue-800">推荐</Badge>;
     }
     if (recommendation.toLowerCase().includes("consider")) {
-      return <Badge className="bg-yellow-100 text-yellow-800">Consider</Badge>;
+      return <Badge className="bg-yellow-100 text-yellow-800">考虑</Badge>;
     }
-    return <Badge className="bg-red-100 text-red-800">Not Recommended</Badge>;
+    return <Badge className="bg-red-100 text-red-800">不推荐</Badge>;
   };
 
   const formatScore = (score: number) => `${Math.round(score * 100)}%`;
@@ -101,7 +101,7 @@ export function BatchEvaluationSummary({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold">
-                Batch Evaluation Results
+                批量评估结果
               </CardTitle>
               <p className="text-muted-foreground">
                 {job.title} {job.department && `• ${job.department}`}
@@ -111,13 +111,13 @@ export function BatchEvaluationSummary({
               {onApplyFilters && (
                 <Button variant="outline" onClick={onApplyFilters}>
                   <Filter className="h-4 w-4 mr-2" />
-                  Filters
+                  筛选
                 </Button>
               )}
               {onExportResults && (
                 <Button variant="outline" onClick={onExportResults}>
                   <Download className="h-4 w-4 mr-2" />
-                  Export
+                  导出
                 </Button>
               )}
             </div>
@@ -131,12 +131,12 @@ export function BatchEvaluationSummary({
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-600" />
-              <span className="text-sm font-medium">Total Candidates</span>
+              <span className="text-sm font-medium">候选人总数</span>
             </div>
             <div className="text-2xl font-bold mt-2">{summary.totalCandidates}</div>
             {summary.filteredCandidates !== summary.totalCandidates && (
               <div className="text-sm text-muted-foreground">
-                {summary.filteredCandidates} after filters
+                {summary.filteredCandidates} 筛选后
               </div>
             )}
           </CardContent>
@@ -146,7 +146,7 @@ export function BatchEvaluationSummary({
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Star className="h-5 w-5 text-yellow-600" />
-              <span className="text-sm font-medium">Average Score</span>
+              <span className="text-sm font-medium">平均分数</span>
             </div>
             <div className="text-2xl font-bold mt-2">{formatScore(summary.averageScore)}</div>
           </CardContent>
@@ -156,7 +156,7 @@ export function BatchEvaluationSummary({
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium">Top Score</span>
+              <span className="text-sm font-medium">最高分数</span>
             </div>
             <div className="text-2xl font-bold mt-2">{formatScore(summary.topScore)}</div>
           </CardContent>
@@ -166,45 +166,45 @@ export function BatchEvaluationSummary({
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-purple-600" />
-              <span className="text-sm font-medium">Recommended</span>
+              <span className="text-sm font-medium">推荐</span>
             </div>
             <div className="text-2xl font-bold mt-2">{summary.recommendedCount}</div>
             <div className="text-sm text-muted-foreground">
-              {Math.round((summary.recommendedCount / summary.filteredCandidates) * 100)}% of total
+              {Math.round((summary.recommendedCount / summary.filteredCandidates) * 100)}% 占总数
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Score Distribution */}
+      {/* 分数分布 */}
       <Card>
         <CardHeader>
-          <CardTitle>Score Distribution</CardTitle>
+          <CardTitle>分数分布</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{summary.scoreDistribution.excellent}</div>
-              <div className="text-sm text-muted-foreground">Excellent (80%+)</div>
+              <div className="text-sm text-muted-foreground">优秀 (80%+)</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{summary.scoreDistribution.good}</div>
-              <div className="text-sm text-muted-foreground">Good (60-79%)</div>
+              <div className="text-sm text-muted-foreground">良好 (60-79%)</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">{summary.scoreDistribution.fair}</div>
-              <div className="text-sm text-muted-foreground">Fair (40-59%)</div>
+              <div className="text-sm text-muted-foreground">一般 (40-59%)</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">{summary.scoreDistribution.poor}</div>
-              <div className="text-sm text-muted-foreground">Poor (&lt;40%)</div>
+              <div className="text-sm text-muted-foreground">较差 (&lt;40%)</div>
             </div>
           </div>
           
           {/* Visual Progress Bars */}
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm w-20">Excellent</span>
+              <span className="text-sm w-20">优秀</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-green-600 h-2 rounded-full" 
@@ -214,7 +214,7 @@ export function BatchEvaluationSummary({
               <span className="text-sm w-8">{summary.scoreDistribution.excellent}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm w-20">Good</span>
+              <span className="text-sm w-20">良好</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full" 
@@ -224,7 +224,7 @@ export function BatchEvaluationSummary({
               <span className="text-sm w-8">{summary.scoreDistribution.good}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm w-20">Fair</span>
+              <span className="text-sm w-20">一般</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-yellow-600 h-2 rounded-full" 
@@ -234,7 +234,7 @@ export function BatchEvaluationSummary({
               <span className="text-sm w-8">{summary.scoreDistribution.fair}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm w-20">Poor</span>
+              <span className="text-sm w-20">较差</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-red-600 h-2 rounded-full" 
@@ -250,7 +250,7 @@ export function BatchEvaluationSummary({
       {/* Top Candidates */}
       <Card>
         <CardHeader>
-          <CardTitle>Ranked Candidates</CardTitle>
+          <CardTitle>候选人排名</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -302,7 +302,7 @@ export function BatchEvaluationSummary({
                   {candidate.scores.culturalFit && (
                     <div className="text-center">
                       <div className="text-sm font-medium">{formatScore(candidate.scores.culturalFit)}</div>
-                      <div className="text-xs text-muted-foreground">Cultural Fit</div>
+                      <div className="text-xs text-muted-foreground">文化匹配</div>
                     </div>
                   )}
                 </div>
@@ -316,7 +316,7 @@ export function BatchEvaluationSummary({
                     ))}
                     {candidate.tags.length > 3 && (
                       <Badge variant="secondary" className="text-xs">
-                        +{candidate.tags.length - 3} more
+                        +{candidate.tags.length - 3} 更多
                       </Badge>
                     )}
                   </div>
@@ -328,7 +328,7 @@ export function BatchEvaluationSummary({
                   <div className="mt-3 pt-3 border-t space-y-2">
                     {candidate.strengths.length > 0 && (
                       <div>
-                        <span className="text-xs font-medium text-green-600">Strengths: </span>
+                        <span className="text-xs font-medium text-green-600">优势：</span>
                         <span className="text-xs text-muted-foreground">
                           {candidate.strengths.slice(0, 2).join(", ")}
                           {candidate.strengths.length > 2 && "..."}
@@ -337,7 +337,7 @@ export function BatchEvaluationSummary({
                     )}
                     {candidate.weaknesses.length > 0 && (
                       <div>
-                        <span className="text-xs font-medium text-red-600">Areas for improvement: </span>
+                        <span className="text-xs font-medium text-red-600">需要改进的方面：</span>
                         <span className="text-xs text-muted-foreground">
                           {candidate.weaknesses.slice(0, 2).join(", ")}
                           {candidate.weaknesses.length > 2 && "..."}

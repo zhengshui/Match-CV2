@@ -132,11 +132,11 @@ export function EvaluationsDashboard() {
         setActiveTab("results");
       } else {
         const error = await response.json();
-        alert(`Evaluation failed: ${error.error}`);
+        alert(`评估失败：${error.error}`);
       }
     } catch (error) {
       console.error("Evaluation error:", error);
-      alert("Failed to create evaluation");
+      alert("创建评估失败");
     } finally {
       setLoading(false);
     }
@@ -163,11 +163,11 @@ export function EvaluationsDashboard() {
         setActiveTab("batch-results");
       } else {
         const error = await response.json();
-        alert(`Batch evaluation failed: ${error.error}`);
+        alert(`批量评估失败：${error.error}`);
       }
     } catch (error) {
       console.error("Batch evaluation error:", error);
-      alert("Failed to process batch evaluation");
+      alert("批量评估处理失败");
     } finally {
       setLoading(false);
     }
@@ -193,11 +193,11 @@ export function EvaluationsDashboard() {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
       <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="create">Create Evaluation</TabsTrigger>
-        <TabsTrigger value="results">Results</TabsTrigger>
-        <TabsTrigger value="batch-results">Batch Results</TabsTrigger>
-        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="overview">概览</TabsTrigger>
+        <TabsTrigger value="create">创建评估</TabsTrigger>
+        <TabsTrigger value="results">结果</TabsTrigger>
+        <TabsTrigger value="batch-results">批量结果</TabsTrigger>
+        <TabsTrigger value="analytics">分析</TabsTrigger>
       </TabsList>
 
       {/* Overview Tab */}
@@ -208,7 +208,7 @@ export function EvaluationsDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-blue-600" />
-                <span className="text-sm font-medium">Total Evaluations</span>
+                <span className="text-sm font-medium">总评估数</span>
               </div>
               <div className="text-2xl font-bold mt-2">{evaluations.length}</div>
             </CardContent>
@@ -218,7 +218,7 @@ export function EvaluationsDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-green-600" />
-                <span className="text-sm font-medium">Active Jobs</span>
+                <span className="text-sm font-medium">活跃职位</span>
               </div>
               <div className="text-2xl font-bold mt-2">
                 {jobs.filter(j => j.status === "ACTIVE").length}
@@ -230,7 +230,7 @@ export function EvaluationsDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-purple-600" />
-                <span className="text-sm font-medium">Avg Score</span>
+                <span className="text-sm font-medium">平均分数</span>
               </div>
               <div className="text-2xl font-bold mt-2">
                 {evaluations.length > 0 
@@ -245,7 +245,7 @@ export function EvaluationsDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-yellow-600" />
-                <span className="text-sm font-medium">Recommended</span>
+                <span className="text-sm font-medium">推荐</span>
               </div>
               <div className="text-2xl font-bold mt-2">
                 {evaluations.filter(e => e.overallScore >= 0.6).length}
@@ -258,10 +258,10 @@ export function EvaluationsDashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Evaluations</CardTitle>
+              <CardTitle>最近评估</CardTitle>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Search candidates or jobs..."
+                  placeholder="搜索候选人或职位..."
                   value={searchTerm}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                   className="w-64"
@@ -271,10 +271,10 @@ export function EvaluationsDashboard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="COMPLETED">Completed</SelectItem>
-                    <SelectItem value="REVIEWED">Reviewed</SelectItem>
+                    <SelectItem value="all">所有状态</SelectItem>
+                    <SelectItem value="PENDING">待处理</SelectItem>
+                    <SelectItem value="COMPLETED">已完成</SelectItem>
+                    <SelectItem value="REVIEWED">已审查</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -320,15 +320,15 @@ export function EvaluationsDashboard() {
       <TabsContent value="create" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Create New Evaluation</CardTitle>
+            <CardTitle>创建新评估</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Job Selection */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Select Job Position</label>
+              <label className="text-sm font-medium mb-2 block">选择职位</label>
               <Select value={selectedJob} onValueChange={setSelectedJob}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a job position" />
+                  <SelectValue placeholder="选择一个职位" />
                 </SelectTrigger>
                 <SelectContent>
                   {jobs.filter(j => j.status === "ACTIVE").map((job) => (
@@ -342,7 +342,7 @@ export function EvaluationsDashboard() {
 
             {/* Resume Selection */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Select Candidates</label>
+              <label className="text-sm font-medium mb-2 block">选择候选人</label>
               <div className="border rounded-lg p-4 max-h-64 overflow-y-auto">
                 {resumes.map((resume) => (
                   <div key={resume.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded">
@@ -366,7 +366,7 @@ export function EvaluationsDashboard() {
                 ))}
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                {selectedResumes.length} candidate(s) selected
+                已选择 {selectedResumes.length} 名候选人
               </p>
             </div>
 
@@ -378,7 +378,7 @@ export function EvaluationsDashboard() {
                 className="flex items-center gap-2"
               >
                 <Brain className="h-4 w-4" />
-                {loading ? "Processing..." : "Single Evaluation"}
+                {loading ? "处理中..." : "单个评估"}
               </Button>
               
               <Button
@@ -388,22 +388,22 @@ export function EvaluationsDashboard() {
                 className="flex items-center gap-2"
               >
                 <Zap className="h-4 w-4" />
-                {loading ? "Processing..." : `Batch Evaluation (${selectedResumes.length})`}
+                {loading ? "处理中..." : `批量评估 (${selectedResumes.length})`}
               </Button>
             </div>
 
             {selectedJob && selectedResumes.length > 0 && (
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Evaluation Preview</h4>
+                <h4 className="font-medium mb-2">评估预览</h4>
                 <p className="text-sm text-muted-foreground">
-                  Job: <strong>{jobs.find(j => j.id === selectedJob)?.title}</strong>
+                  职位：<strong>{jobs.find(j => j.id === selectedJob)?.title}</strong>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Candidates: <strong>{selectedResumes.length}</strong>
+                  候选人：<strong>{selectedResumes.length}</strong>
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  The AI will analyze each candidate against the job requirements, 
-                  considering skills, experience, education, and cultural fit.
+                  AI将根据职位要求分析每个候选人，
+                  考虑技能、经验、教育背景和文化契合度。
                 </p>
               </div>
             )}
@@ -419,7 +419,7 @@ export function EvaluationsDashboard() {
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">
-                Select an evaluation from the overview to view detailed results.
+                从概览中选择一个评估来查看详细结果。
               </p>
             </CardContent>
           </Card>
@@ -457,7 +457,7 @@ export function EvaluationsDashboard() {
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">
-                Run a batch evaluation to see comprehensive results and analytics.
+                运行批量评估以查看综合结果和分析。
               </p>
             </CardContent>
           </Card>
@@ -468,11 +468,11 @@ export function EvaluationsDashboard() {
       <TabsContent value="analytics">
         <Card>
           <CardHeader>
-            <CardTitle>Evaluation Analytics</CardTitle>
+            <CardTitle>评估分析</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-8 text-muted-foreground">
-              Analytics dashboard coming soon...
+              分析仪表板即将推出...
             </div>
           </CardContent>
         </Card>
@@ -505,11 +505,11 @@ function EvaluationResultView({ evaluationId }: { evaluationId: string }) {
   }, [evaluationId]);
 
   if (loading) {
-    return <div className="text-center py-8">Loading evaluation...</div>;
+    return <div className="text-center py-8">加载评估中...</div>;
   }
 
   if (!evaluation) {
-    return <div className="text-center py-8 text-muted-foreground">Evaluation not found.</div>;
+    return <div className="text-center py-8 text-muted-foreground">未找到评估。</div>;
   }
 
   return (

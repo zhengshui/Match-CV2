@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import ResumeUpload from "~/components/resumes/ResumeUpload";
+import ResumePreview from "~/components/resumes/ResumePreview";
 
 interface Resume {
   id: string;
@@ -28,6 +29,8 @@ export default function ResumesPage() {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [showUpload, setShowUpload] = useState(false);
+  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const fetchResumes = async () => {
     try {
@@ -37,10 +40,10 @@ export default function ResumesPage() {
         const data = await response.json() as { resumes: Resume[] };
         setResumes(data.resumes);
       } else {
-        setError("Failed to fetch resumes");
+        setError("获取简历失败");
       }
     } catch {
-      setError("An error occurred while fetching resumes");
+      setError("获取简历时发生错误");
     } finally {
       setLoading(false);
     }
@@ -65,7 +68,7 @@ export default function ResumesPage() {
       category: string;
     }>;
   }) => {
-    setSuccess(`Resume for ${resume.candidateName} uploaded successfully!`);
+    setSuccess(`简历 ${resume.candidateName} 上传成功！`);
     setError("");
     setShowUpload(false);
     void fetchResumes(); // Refresh the list
@@ -77,7 +80,7 @@ export default function ResumesPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("zh-CN", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -97,13 +100,31 @@ export default function ResumesPage() {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "PARSED":
+        return "已解析";
+      case "PENDING":
+        return "待处理";
+      case "FAILED":
+        return "失败";
+      default:
+        return status;
+    }
+  };
+
+  const handlePreview = (resume: Resume) => {
+    setSelectedResume(resume);
+    setShowPreview(true);
+  };
+
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please sign in</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">请先登录</h1>
           <Link href="/auth/signin" className="text-indigo-600 hover:text-indigo-500">
-            Sign in to continue
+            登录以继续
           </Link>
         </div>
       </div>
@@ -116,9 +137,9 @@ export default function ResumesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Resume Management</h1>
+              <h1 className="text-3xl font-bold text-gray-900">简历管理</h1>
               <p className="mt-2 text-sm text-gray-600">
-                Upload and manage candidate resumes
+                上传和管理候选人简历
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -126,13 +147,13 @@ export default function ResumesPage() {
                 onClick={() => setShowUpload(!showUpload)}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
               >
-                {showUpload ? "Cancel" : "Upload Resume"}
+                {showUpload ? "取消" : "上传简历"}
               </button>
               <Link
                 href="/dashboard"
                 className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
               >
-                Back to Dashboard
+                返回控制台
               </Link>
             </div>
           </div>
@@ -194,19 +215,19 @@ export default function ResumesPage() {
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <div className="px-4 py-5 sm:px-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Uploaded Resumes ({resumes.length})
+                已上传简历 ({resumes.length})
               </h3>
             </div>
             
             {loading ? (
               <div className="px-4 py-5 text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-                <p className="mt-2 text-sm text-gray-600">Loading resumes...</p>
+                <p className="mt-2 text-sm text-gray-600">加载简历中...</p>
               </div>
             ) : resumes.length === 0 ? (
               <div className="px-4 py-5 text-center">
                 <p className="text-sm text-gray-500">
-                  No resumes uploaded yet. Click &quot;Upload Resume&quot; to get started.
+                  还没有上传简历。点击&quot;上传简历&quot;开始。
                 </p>
               </div>
             ) : (
@@ -234,10 +255,16 @@ export default function ResumesPage() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => handlePreview(resume)}
+                          className="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                        >
+                          预览
+                        </button>
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(resume.status)}`}
                         >
-                          {resume.status}
+                          {getStatusText(resume.status)}
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {resume.tags.slice(0, 3).map((tag) => (
@@ -263,6 +290,17 @@ export default function ResumesPage() {
           </div>
         </div>
       </div>
+
+      {/* Resume Preview Modal */}
+      {showPreview && selectedResume && (
+        <ResumePreview
+          resume={selectedResume}
+          onClose={() => {
+            setShowPreview(false);
+            setSelectedResume(null);
+          }}
+        />
+      )}
     </div>
   );
 }

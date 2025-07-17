@@ -13,13 +13,13 @@ export default async function EvaluationsPage() {
   return (
     <div className="container mx-auto py-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">AI Evaluation Center</h1>
+        <h1 className="text-3xl font-bold">AI评估中心</h1>
         <p className="text-muted-foreground">
-          Analyze candidate-job matches with AI-powered scoring and insights
+          通过AI智能评分和洞察分析候选人与职位的匹配度
         </p>
       </div>
       
-      <Suspense fallback={<div>Loading evaluations...</div>}>
+      <Suspense fallback={<div>加载评估数据中...</div>}>
         <EvaluationsDashboard />
       </Suspense>
     </div>

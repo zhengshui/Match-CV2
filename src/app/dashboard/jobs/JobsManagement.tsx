@@ -91,7 +91,7 @@ export function JobsManagement() {
       const response = await fetch(`/api/jobs?${params}`);
       
       if (!response.ok) {
-        throw new Error("Failed to fetch jobs");
+        throw new Error("获取职位列表失败");
       }
 
       interface JobsResponse {
@@ -110,7 +110,7 @@ export function JobsManagement() {
       setJobs(jobsWithDates);
       setPagination(data.pagination);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "发生错误");
     } finally {
       setLoading(false);
     }
@@ -135,13 +135,13 @@ export function JobsManagement() {
 
       if (!response.ok) {
         const errorData = await response.json() as { error?: string };
-        throw new Error(errorData.error ?? "Failed to create job");
+        throw new Error(errorData.error ?? "创建职位失败");
       }
 
       void fetchJobs(activeTab === "all" ? undefined : activeTab, searchQuery);
       setIsCreateDialogOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create job");
+      setError(err instanceof Error ? err.message : "创建职位失败");
     } finally {
       setIsSubmitting(false);
     }
@@ -164,21 +164,21 @@ export function JobsManagement() {
 
       if (!response.ok) {
         const errorData = await response.json() as { error?: string };
-        throw new Error(errorData.error ?? "Failed to update job");
+        throw new Error(errorData.error ?? "更新职位失败");
       }
 
       void fetchJobs(activeTab === "all" ? undefined : activeTab, searchQuery);
       setIsEditDialogOpen(false);
       setEditingJob(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update job");
+      setError(err instanceof Error ? err.message : "更新职位失败");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteJob = async (jobId: string) => {
-    if (!confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
+    if (!confirm("确定要删除这个职位吗？此操作无法撤销。")) {
       return;
     }
 
@@ -191,12 +191,12 @@ export function JobsManagement() {
 
       if (!response.ok) {
         const errorData = await response.json() as { error?: string };
-        throw new Error(errorData.error ?? "Failed to delete job");
+        throw new Error(errorData.error ?? "删除职位失败");
       }
 
       void fetchJobs(activeTab === "all" ? undefined : activeTab, searchQuery);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete job");
+      setError(err instanceof Error ? err.message : "删除职位失败");
     }
   };
 
@@ -235,22 +235,22 @@ export function JobsManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Job Management</h1>
+        <h1 className="text-3xl font-bold">职位管理</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Create Job
+              创建职位
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Job</DialogTitle>
+              <DialogTitle>创建新职位</DialogTitle>
             </DialogHeader>
             <JobForm
               onSubmit={handleCreateJob}
               isLoading={isSubmitting}
-              submitLabel="Create Job"
+              submitLabel="创建职位"
             />
           </DialogContent>
         </Dialog>
@@ -266,7 +266,7 @@ export function JobsManagement() {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search jobs..."
+            placeholder="搜索职位..."
             value={searchQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -274,26 +274,26 @@ export function JobsManagement() {
         </div>
         <Button variant="outline" size="sm">
           <Filter className="h-4 w-4 mr-2" />
-          Filters
+          筛选
         </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as JobStatus | "all")}>
         <TabsList>
           <TabsTrigger value="all">
-            All ({jobCounts.all ?? 0})
+            全部 ({jobCounts.all ?? 0})
           </TabsTrigger>
           <TabsTrigger value="ACTIVE">
-            Active ({jobCounts.ACTIVE ?? 0})
+            活跃 ({jobCounts.ACTIVE ?? 0})
           </TabsTrigger>
           <TabsTrigger value="DRAFT">
-            Draft ({jobCounts.DRAFT ?? 0})
+            草稿 ({jobCounts.DRAFT ?? 0})
           </TabsTrigger>
           <TabsTrigger value="PAUSED">
-            Paused ({jobCounts.PAUSED ?? 0})
+            暂停 ({jobCounts.PAUSED ?? 0})
           </TabsTrigger>
           <TabsTrigger value="CLOSED">
-            Closed ({jobCounts.CLOSED ?? 0})
+            已关闭 ({jobCounts.CLOSED ?? 0})
           </TabsTrigger>
         </TabsList>
 
@@ -306,10 +306,10 @@ export function JobsManagement() {
             </div>
           ) : filteredJobs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No jobs found</p>
+              <p className="text-muted-foreground mb-4">未找到职位</p>
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button>Create Your First Job</Button>
+                  <Button>创建您的第一个职位</Button>
                 </DialogTrigger>
               </Dialog>
             </div>
@@ -333,7 +333,7 @@ export function JobsManagement() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Job</DialogTitle>
+            <DialogTitle>编辑职位</DialogTitle>
           </DialogHeader>
           {editingJob && (
             <JobForm
@@ -350,7 +350,7 @@ export function JobsManagement() {
                 tags: editingJob.tags.map(tag => tag.name)
               }}
               isLoading={isSubmitting}
-              submitLabel="Update Job"
+              submitLabel="更新职位"
             />
           )}
         </DialogContent>
