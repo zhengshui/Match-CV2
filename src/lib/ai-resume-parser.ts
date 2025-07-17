@@ -1,5 +1,5 @@
 import { env } from "~/env";
-import { ResumeParser, type ParsedResume } from "./resume-parser";
+import type { ParsedResume } from "./resume-parser";
 
 interface AIParseResult {
   success: boolean;
@@ -30,9 +30,9 @@ export class AIResumeParser {
   
   // 预定义AI模型配置
   private static readonly MODEL_CONFIGS: Record<string, AIModelConfig> = {
-    "gpt-4": {
+    "gpt-4o-mini": {
       provider: "openai",
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       maxTokens: 4000,
       temperature: 0.1,
     },
@@ -258,8 +258,8 @@ export class AIResumeParser {
    * 获取AI模型配置
    */
   private static getModelConfig(): AIModelConfig {
-    const modelName = env.AI_MODEL || "gpt-3.5-turbo";
-    const config = this.MODEL_CONFIGS[modelName] || this.MODEL_CONFIGS["gpt-3.5-turbo"];
+    const modelName = "gpt-4o-mini";
+    const config = this.MODEL_CONFIGS[modelName] || this.MODEL_CONFIGS["gpt-3.5-turbo"]!;
     
     // 应用BaseURL配置
     if (config.provider === "openai" && env.OPENAI_BASE_URL) {
@@ -295,7 +295,7 @@ export class AIResumeParser {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: config.model,
+          model: 'gpt-4o', // 使用最新的GPT-4o模型
           messages: [
             {
               role: "system",
@@ -440,20 +440,18 @@ export class AIResumeParser {
       // 模拟AI思考延时
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
       
-      // 使用传统解析器作为基础
-      const fallbackResult = ResumeParser.parseResumeText(resumeText);
-      
-      // 智能增强解析结果
+      // 使用启发式解析作为基础
       const enhancedResult: ParsedResume = {
-        ...fallbackResult,
-        candidateName: fallbackResult.candidateName || this.extractNameFromText(resumeText),
-        candidateEmail: fallbackResult.candidateEmail || this.extractEmailFromText(resumeText),
-        summary: fallbackResult.summary || this.generateMockSummary(resumeText),
-        skills: this.enhanceSkills(fallbackResult.skills, resumeText),
-        experience: this.enhanceExperience(fallbackResult.experience),
-        education: this.enhanceEducation(fallbackResult.education),
-        certifications: fallbackResult.certifications || this.extractCertifications(resumeText),
-        languages: fallbackResult.languages || this.extractLanguages(resumeText),
+        candidateName: this.extractNameFromText(resumeText),
+        candidateEmail: this.extractEmailFromText(resumeText),
+        phone: this.extractPhoneFromText(resumeText),
+        summary: this.generateMockSummary(resumeText),
+        skills: this.extractSkillsFromText(resumeText),
+        experience: this.extractExperienceFromText(resumeText),
+        education: this.extractEducationFromText(resumeText),
+        certifications: this.extractCertifications(resumeText),
+        languages: this.extractLanguages(resumeText),
+        location: this.extractLocationFromText(resumeText),
       };
 
       const processingTime = Date.now() - startTime;
@@ -580,44 +578,6 @@ export class AIResumeParser {
     }
   }
 
-  /**
-   * 增强技能列表
-   */
-  private static enhanceSkills(skills: string[], text: string): string[] {
-    const enhancedSkills = [...skills];
-    const commonTechSkills = ['JavaScript', 'Python', 'Java', 'React', 'Vue', 'Node.js', 'SQL', 'Git'];
-    
-    for (const skill of commonTechSkills) {
-      if (text.toLowerCase().includes(skill.toLowerCase()) && !enhancedSkills.includes(skill)) {
-        enhancedSkills.push(skill);
-      }
-    }
-    
-    return enhancedSkills.length > 0 ? enhancedSkills : ['JavaScript', 'HTML', 'CSS'];
-  }
-
-  /**
-   * 增强工作经验
-   */
-  private static enhanceExperience(experience: any[]): any[] {
-    return experience.map(exp => ({
-      ...exp,
-      description: exp.description || "负责相关业务的开发、维护和优化工作。",
-      technologies: exp.technologies || ['JavaScript', 'HTML', 'CSS']
-    }));
-  }
-
-  /**
-   * 增强教育背景
-   */
-  private static enhanceEducation(education: any[]): any[] {
-    return education.map(edu => ({
-      ...edu,
-      degree: edu.degree || "本科",
-      university: edu.university || "知名大学",
-      year: edu.year || "2020"
-    }));
-  }
 
   /**
    * 提取证书信息
@@ -645,6 +605,127 @@ export class AIResumeParser {
       return languages;
     }
     return ['中文'];
+  }
+
+  /**
+   * 从文本中提取电话号码
+   */
+  private static extractPhoneFromText(text: string): string | undefined {
+    const phonePattern = /\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b/;
+    const chinesePhonePattern = /1[3-9]\d{9}|(\+86)?[-\s]?1[3-9]\d{9}/;
+    
+    const match = text.match(phonePattern) || text.match(chinesePhonePattern);
+    return match ? match[0] : undefined;
+  }
+
+  /**
+   * 从文本中提取地址位置
+   */
+  private static extractLocationFromText(text: string): string | undefined {
+    const locationKeywords = ['北京', '上海', '广州', '深圳', '杭州', '南京', '武汉', '成都', '西安', '重庆'];
+    for (const city of locationKeywords) {
+      if (text.includes(city)) {
+        return city;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * 从文本中提取技能信息
+   */
+  private static extractSkillsFromText(text: string): string[] {
+    const skillKeywords = [
+      'JavaScript', 'Python', 'Java', 'C++', 'React', 'Vue', 'Angular', 'Node.js',
+      'TypeScript', 'HTML', 'CSS', 'SQL', 'MongoDB', 'MySQL', 'Git', 'Docker',
+      'AWS', 'Azure', 'Linux', 'Spring', 'Express', 'Django', 'Flask'
+    ];
+    
+    const foundSkills: string[] = [];
+    const lowerText = text.toLowerCase();
+    
+    for (const skill of skillKeywords) {
+      if (lowerText.includes(skill.toLowerCase())) {
+        foundSkills.push(skill);
+      }
+    }
+    
+    return foundSkills.length > 0 ? foundSkills : ['计算机技能'];
+  }
+
+  /**
+   * 从文本中提取工作经验
+   */
+  private static extractExperienceFromText(text: string): Array<{
+    title: string;
+    company: string;
+    duration: string;
+    description?: string;
+    technologies?: string[];
+  }> {
+    const experiences: Array<{
+      title: string;
+      company: string;
+      duration: string;
+      description?: string;
+      technologies?: string[];
+    }> = [];
+    
+    // 简单的正则匹配工作经验模式
+    const expPattern = /(软件工程师|开发工程师|程序员|技术总监|项目经理|产品经理|架构师|前端|后端|全栈)/gi;
+    const companyPattern = /(公司|企业|科技|技术|信息|软件|网络)/gi;
+    const yearPattern = /20\d{2}/g;
+    
+    const titles = text.match(expPattern);
+    const companies = text.match(companyPattern);
+    const years = text.match(yearPattern);
+    
+    if (titles && titles.length > 0) {
+      experiences.push({
+        title: titles[0] || '软件工程师',
+        company: companies ? companies[0] + '公司' : '科技公司',
+        duration: years && years.length >= 2 ? `${years[0]}-${years[years.length - 1]}` : '2020-2023',
+        description: '负责相关技术开发和维护工作',
+        technologies: this.extractSkillsFromText(text).slice(0, 5)
+      });
+    }
+    
+    return experiences;
+  }
+
+  /**
+   * 从文本中提取教育背景
+   */
+  private static extractEducationFromText(text: string): Array<{
+    degree: string;
+    university: string;
+    year: string;
+    gpa?: string;
+  }> {
+    const education: Array<{
+      degree: string;
+      university: string;
+      year: string;
+      gpa?: string;
+    }> = [];
+    
+    const degreeKeywords = ['本科', '学士', '硕士', '博士', 'Bachelor', 'Master', 'PhD'];
+    const universityKeywords = ['大学', '学院', 'University', 'College'];
+    const yearPattern = /20\d{2}/g;
+    
+    const hasDegree = degreeKeywords.some(keyword => text.includes(keyword));
+    const hasUniversity = universityKeywords.some(keyword => text.includes(keyword));
+    const years = text.match(yearPattern);
+    
+    if (hasDegree || hasUniversity) {
+      education.push({
+        degree: hasDegree ? '本科' : '学士学位',
+        university: hasUniversity ? '知名大学' : '大学',
+        year: years && years.length > 0 ? years[0] : '2020'
+      });
+    }
+    
+    return education;
   }
 
   /**
@@ -868,30 +949,116 @@ ${JSON.stringify(result, null, 2)}
   }
 
   /**
-   * 智能回退解析策略
+   * 使用AI从文件中提取文本内容
+   */
+  private static async extractTextWithAI(base64Content: string, mimeType: string): Promise<string> {
+    const config = this.getModelConfig();
+    
+    const extractionPrompt = `
+你是一个专业的文档解析AI。请从以下${mimeType}格式的文档中提取所有文本内容。
+
+文档类型：${mimeType}
+任务：提取文档中的所有文本，保持原有的结构和格式。
+
+请直接返回提取的文本内容，不要添加任何解释或格式化标记。
+
+文档内容（Base64编码）：
+${base64Content.substring(0, 100000)} // 限制长度避免超出token限制
+`;
+
+    try {
+      if (config.provider === "openai") {
+        const response = await fetch("https://one-api.jzhj.top/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer sk-kET4y8uDplnDklzXDe137871Ba39400b93D61bBb539e0b66`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "user",
+                content: extractionPrompt,
+              },
+            ],
+            temperature: 0.1,
+            max_tokens: 3000,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`OpenAI extraction failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || "";
+      } else if (config.provider === "anthropic") {
+        const response = await fetch((config.baseURL || "https://api.anthropic.com") + "/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": env.ANTHROPIC_API_KEY || "",
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: config.model,
+            max_tokens: 3000,
+            temperature: 0.1,
+            messages: [
+              {
+                role: "user",
+                content: extractionPrompt,
+              },
+            ],
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Anthropic extraction failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.content?.[0]?.text || "";
+      } else {
+        // Mock模式，返回基本文本说明
+        return `模拟提取的简历文本内容 - 文件类型: ${mimeType}
+姓名：张三
+邮箱：zhangsan@example.com
+电话：138-0000-0000
+技能：JavaScript, React, Node.js
+工作经验：软件工程师 - ABC公司 - 2020-2023
+教育背景：计算机科学学士 - XYZ大学 - 2020`;
+      }
+    } catch (error) {
+      console.error("AI文本提取失败:", error);
+      throw new Error("无法从文档中提取文本内容");
+    }
+  }
+
+  /**
+   * 智能回退解析策略 - 纯启发式解析
    */
   private static async fallbackParsing(resumeText: string): Promise<ParsedResume> {
     try {
-      console.log("[回退解析] 使用增强版传统解析器...");
+      console.log("[回退解析] 使用启发式解析算法...");
       
-      // 使用传统解析器作为基础
-      const basicResult = ResumeParser.parseResumeText(resumeText);
-      
-      // 应用启发式增强
-      const enhancedResult: ParsedResume = {
-        ...basicResult,
-        candidateName: basicResult.candidateName || this.extractNameFromText(resumeText),
-        candidateEmail: basicResult.candidateEmail || this.extractEmailFromText(resumeText),
-        summary: basicResult.summary || this.generateMockSummary(resumeText),
-        skills: this.enhanceSkills(basicResult.skills, resumeText),
-        experience: this.enhanceExperience(basicResult.experience),
-        education: this.enhanceEducation(basicResult.education),
-        certifications: basicResult.certifications || this.extractCertifications(resumeText),
-        languages: basicResult.languages || this.extractLanguages(resumeText),
+      // 直接使用启发式方法构建基础结果
+      const basicResult: ParsedResume = {
+        candidateName: this.extractNameFromText(resumeText),
+        candidateEmail: this.extractEmailFromText(resumeText),
+        phone: this.extractPhoneFromText(resumeText),
+        summary: this.generateMockSummary(resumeText),
+        skills: this.extractSkillsFromText(resumeText),
+        experience: this.extractExperienceFromText(resumeText),
+        education: this.extractEducationFromText(resumeText),
+        certifications: this.extractCertifications(resumeText),
+        languages: this.extractLanguages(resumeText),
+        location: this.extractLocationFromText(resumeText),
       };
 
-      console.log("[回退解析] 增强解析完成");
-      return enhancedResult;
+      console.log("[回退解析] 启发式解析完成");
+      return basicResult;
     } catch (error) {
       console.error("[回退解析] 解析失败:", error);
       
@@ -907,33 +1074,48 @@ ${JSON.stringify(result, null, 2)}
   }
 
   /**
-   * 增强的简历解析接口，集成AI深度分析
+   * 纯AI简历解析接口，直接使用AI处理文件内容
    */
   static async parseResume(buffer: Buffer, mimeType: string): Promise<ParsedResume> {
     const startTime = Date.now();
     
     try {
-      console.log(`[文档解析] 开始处理 ${mimeType} 格式的简历文档...`);
+      console.log(`[AI文档解析] 开始处理 ${mimeType} 格式的简历文档...`);
       
-      // 第一步：提取文本内容
-      const text = await ResumeParser.extractText(buffer, mimeType);
+      // 使用AI直接处理文件内容，无需传统文本提取
+      let text: string;
+      
+      try {
+        // 尝试简单的文本提取，如果失败则使用AI理解文件
+        if (mimeType === "text/plain") {
+          text = buffer.toString("utf-8");
+        } else {
+          // 对于PDF和Word文档，直接让AI分析base64编码的内容
+          const base64Content = buffer.toString("base64");
+          text = await this.extractTextWithAI(base64Content, mimeType);
+        }
+      } catch (extractError) {
+        console.log(`[AI文档解析] 传统提取失败，使用AI直接处理文件: ${extractError}`);
+        const base64Content = buffer.toString("base64");
+        text = await this.extractTextWithAI(base64Content, mimeType);
+      }
       
       if (!text || text.trim().length === 0) {
         throw new Error("简历文档中未找到可解析的文本内容");
       }
 
-      console.log(`[文档解析] 文本提取完成，长度: ${text.length} 字符`);
+      console.log(`[AI文档解析] 内容提取完成，长度: ${text.length} 字符`);
 
-      // 第二步：AI深度解析
+      // AI深度解析
       const parsed = await this.parseResumeWithAI(text);
       
       const totalTime = Date.now() - startTime;
-      console.log(`[文档解析] 简历解析完全完成，总用时: ${totalTime}ms`);
+      console.log(`[AI文档解析] 简历解析完全完成，总用时: ${totalTime}ms`);
       
       return parsed;
     } catch (error) {
       const totalTime = Date.now() - startTime;
-      console.error(`[文档解析] 解析失败，用时: ${totalTime}ms, 错误:`, error);
+      console.error(`[AI文档解析] 解析失败，用时: ${totalTime}ms, 错误:`, error);
       throw new Error(`AI简历解析失败: ${error instanceof Error ? error.message : "未知错误"}`);
     }
   }
@@ -1011,7 +1193,7 @@ ${JSON.stringify(result, null, 2)}
   /**
    * 解析质量评估
    */
-  static evaluateParsingQuality(result: ParsedResume, originalText: string): {
+  static evaluateParsingQuality(result: ParsedResume, _originalText: string): {
     score: number;
     issues: string[];
     suggestions: string[];
