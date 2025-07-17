@@ -333,26 +333,26 @@ export class AIMatchingEngine {
   ): string {
     const parts: string[] = [];
     
-    parts.push(`${candidate.candidateName} scored ${(scores.overall * 100).toFixed(0)}% overall for the ${job.title} position.`);
+    parts.push(`候选人 ${candidate.candidateName} 在 ${job.title} 职位上的综合匹配度为 ${(scores.overall * 100).toFixed(0)}%。`);
     
     if (scores.skills > 0.7) {
-      parts.push("Strong technical skills alignment with job requirements.");
+      parts.push("技能匹配度优秀，与岗位要求高度契合。");
     } else if (scores.skills > 0.5) {
-      parts.push("Moderate skills match with some gaps to address.");
+      parts.push("技能匹配度良好，存在一些技能提升空间。");
     } else {
-      parts.push("Limited skills alignment - significant training may be required.");
+      parts.push("技能匹配度有限，可能需要针对性培训。");
     }
     
     if (scores.experience > 0.7) {
-      parts.push("Excellent relevant experience for this role.");
+      parts.push("工作经验非常符合该职位要求。");
     } else if (scores.experience > 0.5) {
-      parts.push("Good experience level with room for growth.");
+      parts.push("工作经验较为匹配，有进一步发展空间。");
     } else {
-      parts.push("Limited relevant experience - may be suitable for junior role.");
+      parts.push("相关工作经验有限，适合初级岗位或有培养潜力。");
     }
     
     if (scores.education > 0.7) {
-      parts.push("Educational background strongly supports role requirements.");
+      parts.push("教育背景与岗位要求匹配度高。");
     }
     
     return parts.join(" ");
@@ -360,30 +360,30 @@ export class AIMatchingEngine {
 
   private static generateRecommendation(overallScore: number, _candidate?: ParsedResume): string {
     if (overallScore >= 0.8) {
-      return "Highly Recommended - Excellent candidate with strong alignment across all areas.";
+      return "强烈推荐 - 优秀候选人，各方面能力均与岗位高度匹配";
     } else if (overallScore >= 0.6) {
-      return "Recommended - Good candidate with minor gaps that can be addressed.";
+      return "推荐 - 良好候选人，存在少数可改进的差距";
     } else if (overallScore >= 0.4) {
-      return "Consider with Caution - Moderate fit, requires careful evaluation of gaps.";
+      return "谨慎考虑 - 匹配度一般，需要仔细评估能力差距";
     } else {
-      return "Not Recommended - Poor fit for current requirements.";
+      return "不推荐 - 与当前岗位要求匹配度较低";
     }
   }
 
   private static identifyStrengths(scores: MatchingScore, candidate: ParsedResume): string[] {
     const strengths: string[] = [];
     
-    if (scores.skills > 0.7) strengths.push("Strong technical skills");
-    if (scores.experience > 0.7) strengths.push("Relevant work experience");
-    if (scores.education > 0.7) strengths.push("Appropriate educational background");
-    if (scores.culturalFit && scores.culturalFit > 0.7) strengths.push("Good cultural fit");
+    if (scores.skills > 0.7) strengths.push("技术能力突出");
+    if (scores.experience > 0.7) strengths.push("相关工作经验丰富");
+    if (scores.education > 0.7) strengths.push("教育背景匹配");
+    if (scores.culturalFit && scores.culturalFit > 0.7) strengths.push("企业文化适应性强");
     
     if (candidate.certifications && candidate.certifications.length > 0) {
-      strengths.push("Professional certifications");
+      strengths.push("拥有专业认证证书");
     }
     
     if (candidate.languages && candidate.languages.length > 1) {
-      strengths.push("Multilingual abilities");
+      strengths.push("多语言能力");
     }
     
     return strengths;
@@ -392,10 +392,10 @@ export class AIMatchingEngine {
   private static identifyWeaknesses(scores: MatchingScore, candidate: ParsedResume): string[] {
     const weaknesses: string[] = [];
     
-    if (scores.skills < 0.5) weaknesses.push("Limited technical skills match");
-    if (scores.experience < 0.5) weaknesses.push("Insufficient relevant experience");
-    if (scores.education < 0.5) weaknesses.push("Educational background concerns");
-    if (scores.culturalFit && scores.culturalFit < 0.5) weaknesses.push("Cultural fit concerns");
+    if (scores.skills < 0.5) weaknesses.push("技术技能匹配度不足");
+    if (scores.experience < 0.5) weaknesses.push("相关工作经验有限");
+    if (scores.education < 0.5) weaknesses.push("教育背景匹配度较低");
+    if (scores.culturalFit && scores.culturalFit < 0.5) weaknesses.push("企业文化适应性需要关注");
     
     return weaknesses;
   }
@@ -417,18 +417,18 @@ export class AIMatchingEngine {
     const tags: string[] = [];
     
     // Performance tags
-    if (scores.overall >= 0.8) tags.push("Top Candidate");
-    else if (scores.overall >= 0.6) tags.push("Good Match");
-    else if (scores.overall >= 0.4) tags.push("Potential");
-    else tags.push("Poor Fit");
+    if (scores.overall >= 0.8) tags.push("顶级候选人");
+    else if (scores.overall >= 0.6) tags.push("良好匹配");
+    else if (scores.overall >= 0.4) tags.push("有潜力");
+    else tags.push("匹配度低");
     
     // Skills tags
-    if (scores.skills >= 0.8) tags.push("Skills Expert");
-    else if (scores.skills < 0.4) tags.push("Skills Gap");
+    if (scores.skills >= 0.8) tags.push("技能专家");
+    else if (scores.skills < 0.4) tags.push("技能差距");
     
     // Experience tags
-    if (scores.experience >= 0.8) tags.push("Experienced");
-    else if (scores.experience < 0.4) tags.push("Entry Level");
+    if (scores.experience >= 0.8) tags.push("经验丰富");
+    else if (scores.experience < 0.4) tags.push("初级水平");
     
     // Department-specific tags
     if (job.department) {

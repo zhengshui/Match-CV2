@@ -15,6 +15,12 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    OPENAI_API_KEY: z.string().optional(),
+    OPENAI_BASE_URL: z.string().optional(),
+    ANTHROPIC_API_KEY: z.string().optional(),
+    ANTHROPIC_BASE_URL: z.string().optional(),
+    AI_PROVIDER: z.enum(["openai", "anthropic", "mock"]).default("mock"),
+    AI_MODEL: z.string().optional(),
   },
 
   /**
@@ -34,6 +40,12 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    ANTHROPIC_BASE_URL: process.env.ANTHROPIC_BASE_URL,
+    AI_PROVIDER: process.env.AI_PROVIDER,
+    AI_MODEL: process.env.AI_MODEL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
