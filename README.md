@@ -1,29 +1,138 @@
-# Create T3 App
+# Match-CV2 - AI简历匹配系统
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Match-CV2 是一个基于人工智能的智能招聘工具，通过自动化简历分析和候选人-职位匹配，提高早期招聘阶段的效率。
 
-## What's next? How do I make an app with this?
+## 项目特色
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+### 🎯 核心功能
+- **智能简历解析**：支持PDF、Word、文本格式简历的结构化信息提取
+- **AI驱动匹配**：多维度评分引擎，提供详细匹配解释
+- **智能筛选**：批量处理，优先级推荐和淘汰建议
+- **自动标签**：智能候选人标签和决策支持
+- **自定义评分**：企业可配置的评估策略
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 🚀 技术优势
+- 高精度的简历信息抽取
+- 语义化的职位-候选人匹配
+- 批量处理大规模候选人数据
+- 实时评分和排序功能
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## 技术栈
 
-## Learn More
+- **前端框架**：Next.js 15 (App Router)
+- **身份认证**：NextAuth.js 5.0
+- **编程语言**：TypeScript (严格模式)
+- **样式框架**：Tailwind CSS 4.0
+- **数据库**：计划集成 Prisma/Drizzle ORM
+- **AI集成**：OpenAI/Claude API
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## 快速开始
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 环境要求
+- Node.js 18+
+- npm 或 yarn
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### 安装依赖
+```bash
+npm install
+```
 
-## How do I deploy this?
+### 环境变量配置
+创建 `.env.local` 文件并配置以下变量：
+```env
+AUTH_SECRET=your-auth-secret
+DATABASE_URL=your-database-url
+OPENAI_API_KEY=your-openai-key
+UPLOAD_SECRET=your-upload-secret
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### 开发命令
+```bash
+# 启动开发服务器
+npm run dev --turbo
+
+# 构建生产版本
+npm run build
+
+# 启动生产服务器
+npm run start
+
+# 代码检查
+npm run check          # 运行 lint 和 typecheck
+npm run lint           # ESLint 检查
+npm run typecheck      # TypeScript 类型检查
+
+# 代码格式化
+npm run format:check   # 检查格式
+npm run format:write   # 应用格式化
+```
+
+## 项目结构
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   └── auth/          # 身份认证
+│   ├── dashboard/         # 主应用面板
+│   ├── auth/             # 认证页面
+│   └── layout.tsx        # 根布局
+├── components/           # 可复用 UI 组件
+│   ├── ui/              # 基础 UI 组件
+│   ├── forms/           # 表单组件
+│   └── charts/          # 数据可视化
+├── lib/                 # 工具函数和配置
+│   ├── auth.ts          # 认证工具
+│   ├── db.ts           # 数据库连接
+│   ├── ai.ts           # AI 服务集成
+│   └── utils.ts        # 通用工具
+├── server/             # 服务端逻辑
+│   ├── auth/           # 认证配置
+│   ├── api/            # API 层
+│   └── services/       # 业务逻辑服务
+├── types/              # TypeScript 类型定义
+└── styles/             # 全局样式
+```
+
+## 主要功能模块
+
+### 📄 简历处理
+- 多格式文件上传支持
+- AI驱动的文本提取和结构化
+- 技能、经验、教育背景自动识别
+
+### 🎯 智能匹配
+- 语义化职位描述分析
+- 多维度候选人评分
+- 匹配度解释和建议
+
+### 📊 数据分析
+- 候选人池分析
+- 匹配趋势统计
+- 招聘效率报告
+
+### 🔧 系统管理
+- 用户权限管理
+- 评分策略配置
+- 数据导入导出
+
+## 贡献指南
+
+1. Fork 项目仓库
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+## 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+## 联系方式
+
+项目维护者：[您的姓名]
+邮箱：[您的邮箱]
+
+---
+
+*基于 [T3 Stack](https://create.t3.gg/) 构建*
