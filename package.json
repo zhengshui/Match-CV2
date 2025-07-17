@@ -16,9 +16,13 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset",
+    "db:start": "./db.sh start",
+    "db:stop": "./db.sh stop",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

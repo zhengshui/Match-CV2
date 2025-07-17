@@ -23,27 +23,57 @@ Match-CV2 是一个基于人工智能的智能招聘工具，通过自动化简�
 - **身份认证**：NextAuth.js 5.0
 - **编程语言**：TypeScript (严格模式)
 - **样式框架**：Tailwind CSS 4.0
-- **数据库**：计划集成 Prisma/Drizzle ORM
+- **数据库**：PostgreSQL + Prisma ORM
 - **AI集成**：OpenAI/Claude API
+- **容器化**：Docker (PostgreSQL)
 
 ## 快速开始
 
 ### 环境要求
 - Node.js 18+
+- Docker & Docker Compose
 - npm 或 yarn
 
-### 安装依赖
+### 1. 克隆项目
+```bash
+git clone <repository-url>
+cd Match-CV2
+```
+
+### 2. 安装依赖
 ```bash
 npm install
 ```
 
-### 环境变量配置
-创建 `.env.local` 文件并配置以下变量：
+### 3. 配置环境变量
+复制并编辑环境变量文件：
+```bash
+cp .env.example .env.local
+```
+
+编辑 `.env.local` 文件：
 ```env
 AUTH_SECRET=your-auth-secret
-DATABASE_URL=your-database-url
+DATABASE_URL=postgresql://admin:password@localhost:5432/match_cv2
 OPENAI_API_KEY=your-openai-key
 UPLOAD_SECRET=your-upload-secret
+```
+
+### 4. 启动数据库
+```bash
+# 启动PostgreSQL数据库
+./db.sh start
+
+# 运行数据库迁移
+./db.sh migrate
+
+# 填充示例数据
+./db.sh seed
+```
+
+### 5. 启动开发服务器
+```bash
+npm run dev
 ```
 
 ### 开发命令
@@ -65,6 +95,30 @@ npm run typecheck      # TypeScript 类型检查
 # 代码格式化
 npm run format:check   # 检查格式
 npm run format:write   # 应用格式化
+```
+
+### 数据库管理
+```bash
+# 基础操作
+./db.sh start          # 启动数据库
+./db.sh stop           # 停止数据库
+./db.sh status         # 查看数据库状态
+
+# 开发操作
+./db.sh migrate        # 运行数据库迁移
+./db.sh seed           # 填充示例数据
+./db.sh reset          # 重置数据库
+
+# 调试和管理
+./db.sh psql           # 连接数据库命令行
+./db.sh logs           # 查看数据库日志
+
+# 或者使用npm脚本
+npm run db:start       # 启动数据库
+npm run db:stop        # 停止数据库
+npm run db:migrate     # 运行迁移
+npm run db:seed        # 填充数据
+npm run db:studio      # 启动Prisma Studio
 ```
 
 ## 项目结构
